@@ -51,9 +51,13 @@ button.primary:hover{background:var(--accent-hover);border-color:var(--accent-ho
 .hint a{color:var(--accent)}
 .wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
 .grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
-@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr);gap:16px}}
 .card+.card{margin-top:20px}
-@media (max-width:900px){.card+.card{margin-top:16px}}
+@media (max-width:900px){
+  .grid{display:flex;flex-direction:column;align-items:stretch;gap:16px}
+  .col{display:contents}
+  .card+.card{margin-top:0}
+  #playerCard{order:1} #addCard{order:2} #listCard{order:3} #sendCard{order:4}
+}
 .card.mon{padding:0;overflow:hidden}
 .mon .hint{padding:0 16px 14px;margin:0}
 .mon .hint:empty{display:none}
@@ -138,13 +142,22 @@ button.sw.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent)}
 <div class="wrap">
 
 <div class="grid">
-  <!-- LEFT: player + add note -->
-  <div>
-    <div class="card mon">
+  <!-- LEFT: player + list -->
+  <div class="col">
+    <div class="card mon" id="playerCard">
       <div class="player" id="player"><div class="empty">No video loaded. Open the review link your editor sent you.</div></div>
       <p class="hint" id="playerHint"></p>
     </div>
 
+    <div class="card" id="listCard">
+      <h2>Your changes <span class="count" id="count"></span></h2>
+      <ul class="list" id="list"></ul>
+      <p class="none" id="noneMsg">Nothing yet. Watch the video and add notes as you go.</p>
+    </div>
+  </div>
+
+  <!-- RIGHT: add note + send -->
+  <div class="col">
     <div class="card" id="addCard">
       <h2>Add a change request</h2>
       <div class="field">
@@ -180,17 +193,8 @@ button.sw.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent)}
       <button class="primary" id="addBtn">Add to list</button>
       <span class="hint" style="margin-left:8px">Ctrl+Enter also adds.</span>
     </div>
-  </div>
 
-  <!-- RIGHT: list + send -->
-  <div>
-    <div class="card">
-      <h2>Your changes <span class="count" id="count"></span></h2>
-      <ul class="list" id="list"></ul>
-      <p class="none" id="noneMsg">Nothing yet. Watch the video and add notes as you go.</p>
-    </div>
-
-    <div class="card">
+    <div class="card" id="sendCard">
       <h2>Send to editor</h2>
       <div class="field">
         <label for="client">Your name</label>
