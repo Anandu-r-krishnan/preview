@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#161a22; --muted:#5c6575; --line:#d7dce3;
+  --accent:#3a4cff; --accent-ink:#ffffff; --pin:#ff9f1c; --ok:#1c8c5a; --bad:#c93a3a;
+  --head:"Bricolage Grotesque",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#12151b;--panel:#1b1f27;--ink:#eceff4;--muted:#9aa3b2;--line:#2c323d;--accent:#7b8aff;--accent-ink:#10131a;--pin:#ffb347;--ok:#4cc38a;--bad:#ff7a7a}
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1,h2{font-family:var(--head);margin:0;letter-spacing:-.01em}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+h1{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700}
+.by{color:var(--muted);font-size:.95rem}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card+.card{margin-top:16px}
+h2{font-size:1.15rem;font-weight:700;margin-bottom:10px}
+label{display:block;font-size:.85rem;font-weight:600;margin:0 0 4px}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px}
+textarea{resize:vertical;min-height:84px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 140px}
+.field{margin-bottom:12px}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:9px 14px;font-weight:600}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.small{padding:4px 9px;font-size:.82rem}
+.linkbar{display:flex;gap:8px;margin-bottom:12px}
+.linkbar input{flex:1}
+.player{position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden}
+.player iframe,.player video,.player>div{position:absolute;inset:0;width:100%;height:100%;border:0}
+.empty{display:grid;place-items:center;color:#aab;text-align:center;padding:20px;font-size:.95rem}
+.hint{color:var(--muted);font-size:.85rem;margin:8px 0 0}
+.timerow{display:flex;gap:8px}
+.timerow input{max-width:130px;font-variant-numeric:tabular-nums;font-weight:600}
+.timerow button{white-space:nowrap}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pills input{position:absolute;opacity:0;width:0}
+.pills label{margin:0;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-weight:500;font-size:.88rem;cursor:pointer;background:var(--bg)}
+.pills input:checked+label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pills input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.list{list-style:none;margin:0;padding:0;max-height:520px;overflow:auto}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.ts{background:var(--pin);color:#1a1100;border:0;font-variant-numeric:tabular-nums;font-weight:700;border-radius:5px;padding:2px 8px;height:fit-content}
+.tags{font-size:.8rem;color:var(--muted)}
+.must{color:var(--bad);font-weight:600}
+.txt{grid-column:2;margin:0;white-space:pre-wrap;word-break:break-word}
+.acts{grid-column:3;grid-row:1 / span 2;display:flex;flex-direction:column;gap:4px}
+.item.done .txt{text-decoration:line-through;opacity:.55}
+.count{color:var(--muted);font-weight:500;font-size:.9rem}
+.sendbtns{display:flex;flex-wrap:wrap;gap:8px}
+#status{min-height:1.4em;margin:10px 0 0;font-size:.9rem;color:var(--ok)}
+#status.err{color:var(--bad)}
+.none{color:var(--muted);margin:0}
+@media (pointer:coarse){button{min-height:44px}button.small{min-height:40px;padding:6px 12px}.ts{min-height:36px;padding:4px 12px}.pills label{padding:9px 14px}}
+@media (max-width:600px){.wrap{padding:12px 10px 50px}.card{padding:12px}.list{max-height:none}.linkbar{flex-direction:column}.timerow input{max-width:none;flex:1}.sendbtns button{flex:1 1 45%}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1 id="title">Video review</h1>
+  <div class="by" id="by"></div>
+</header>
+
+<div class="grid">
+  <!-- LEFT: player + add note -->
+  <div>
+    <div class="card">
+      <div class="player" id="player"><div class="empty">No video loaded. Open the review link your editor sent you.</div></div>
+      <p class="hint" id="playerHint"></p>
+    </div>
+
+    <div class="card">
+      <h2>Add a change request</h2>
+      <div class="field">
+        <label for="time">Time in video</label>
+        <div class="timerow">
+          <input id="time" inputmode="text" autocomplete="off" placeholder="0:00" aria-describedby="timeHelp">
+          <button type="button" id="nowBtn">Use current time</button>
+        </div>
+        <p class="hint" id="timeHelp">Follows the video while you watch. Tap the note box to pause and lock the time. You can type a time like 1:25.</p>
+      </div>
+      <div class="field">
+        <label id="catLabel">Type of change</label>
+        <div class="pills" role="radiogroup" aria-labelledby="catLabel" id="cats"></div>
+      </div>
+      <div class="field">
+        <label id="priLabel">Importance</label>
+        <div class="pills" role="radiogroup" aria-labelledby="priLabel" id="pris"></div>
+      </div>
+      <div class="field">
+        <label for="note">What should change?</label>
+        <textarea id="note" placeholder="Example: Cut this shot 2 seconds earlier. The music is too loud here."></textarea>
+      </div>
+      <button class="primary" id="addBtn">Add to list</button>
+      <span class="hint">Ctrl+Enter also adds.</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: list + send -->
+  <div>
+    <div class="card">
+      <h2>Your changes <span class="count" id="count"></span></h2>
+      <ul class="list" id="list"></ul>
+      <p class="none" id="noneMsg">Nothing yet. Watch the video and add notes as you go.</p>
+    </div>
+
+    <div class="card">
+      <h2>Send to editor</h2>
+      <div class="row field">
+        <div><label for="client">Your name</label><input id="client" autocomplete="name"></div>
+        <div><label for="version">Version reviewed</label><input id="version" placeholder="Example: V1 or Draft 2"></div>
+      </div>
+      <div class="field">
+        <label for="general">Overall comments (optional)</label>
+        <textarea id="general" placeholder="Anything general: pace, mood, music style, what you liked."></textarea>
+      </div>
+      <div class="sendbtns">
+        <button id="sendForm" class="primary" hidden>Send feedback</button>
+        <button id="sendMail" class="primary">Send by email</button>
+        <button id="sendWa">Send on WhatsApp</button>
+        <button id="sendGrp" hidden>Copy and open group</button>
+        <button id="copyBtn">Copy text</button>
+        <button id="dlBtn">Download .txt</button>
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
+      <p class="hint">Notes save in this browser automatically. Nothing is sent until you press a send button.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ============ EDITOR SETTINGS: change these ============ */
+const CONFIG = {
+  editorName: "Your Name",
+  editorEmail: "you@example.com",
+  whatsapp: "",            // your number, digits only with country code, e.g. "919876543210". Leave "" and client picks the chat or group.
+  whatsappGroup: "",       // optional group invite link, e.g. "https://chat.whatsapp.com/XXXX". Adds a "Copy and open group" button.
+  formEndpoint: "",        // optional Formspree URL, e.g. "https://formspree.io/f/xxxxxxx". Leave "" to hide.
+  projectTitle: "Video review",
+  defaultVideo: ""         // optional default link
+};
+/* Per-client link example:
+   https://yourname.github.io/review/?video=https://youtu.be/XXXX&project=Wedding%20Teaser&version=V2&client=Asha */
+
+const CATS = ["Cut / trim","Audio","Music","Colour","Text / graphics","Speed / pacing","Other"];
+const PRIS = [["must","Must fix"],["nice","Nice to have"]];
+const $ = s => document.querySelector(s);
+const params = new URLSearchParams(location.search);
+
+let state = {client:"",version:"",general:"",items:[]};
+let videoUrl = "";
+let api = {canTime:false, getTime:async()=>null, seek:()=>{}, pause:()=>{}};
+let dirty = false;
+
+/* ---------- helpers ---------- */
+const fmt = s => { s=Math.max(0,Math.floor(s)); const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60;
+  return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(x).padStart(2,"0"); };
+const parseT = str => { if(!str) return null; const p=str.trim().replace(/[.,;]/g,":").split(":").map(Number);
+  if(p.some(n=>isNaN(n)||n<0)||p.length>3) return null;
+  return p.reduce((a,n)=>a*60+n,0); };
+const say = (msg,err) => { const e=$("#status"); e.textContent=msg; e.className=err?"err":""; };
+const key = () => "fb:"+(videoUrl||"none");
+const save = () => { try{localStorage.setItem(key(),JSON.stringify(state))}catch(e){} };
+const load = () => { try{const d=JSON.parse(localStorage.getItem(key())); if(d) return d}catch(e){} return null; };
+
+/* ---------- setup ---------- */
+const title = params.get("project")||CONFIG.projectTitle;
+$("#title").textContent = title; document.title = title;
+const editorName = params.get("editor") || CONFIG.editorName;
+$("#by").textContent = editorName ? "Edited by "+editorName : "";
+$("#cats").innerHTML = CATS.map((c,i)=>`<input type="radio" name="cat" id="c${i}" value="${c}" ${i===0?"checked":""}><label for="c${i}">${c}</label>`).join("");
+$("#pris").innerHTML = PRIS.map((p,i)=>`<input type="radio" name="pri" id="p${i}" value="${p[0]}" ${i===0?"checked":""}><label for="p${i}">${p[1]}</label>`).join("");
+if(CONFIG.whatsappGroup) $("#sendGrp").hidden = false;
+if(CONFIG.formEndpoint) $("#sendForm").hidden = false;
+if(!CONFIG.editorEmail || CONFIG.editorEmail==="you@example.com") { /* keep button, will warn */ }
+
+/* ---------- video loading ---------- */
+function ytId(u){ const m=u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/); return m&&m[1]; }
+function vimeoParts(u){ const m=u.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([a-f0-9]+))?/); return m&&{id:m[1],h:m[2]}; }
+
+let ytReady = null;
+function loadYT(){ if(ytReady) return ytReady;
+  ytReady = new Promise(res=>{ if(window.YT&&YT.Player) return res();
+    window.onYouTubeIframeAPIReady = res;
+    const s=document.createElement("script"); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s); });
+  return ytReady; }
+let vimeoReady = null;
+function loadVimeo(){ if(vimeoReady) return vimeoReady;
+  vimeoReady = new Promise(res=>{ if(window.Vimeo) return res();
+    const s=document.createElement("script"); s.src="https://player.vimeo.com/api/player.js"; s.onload=res; document.head.appendChild(s); });
+  return vimeoReady; }
+
+
+/* ---- any-link parser (from your portfolio site) ---- */
+function mkVid(kind, src, original){ return {kind:kind, src:src, original:original||src}; }
+function addParam(url, param){
+  if(new RegExp('[?&]'+param.split('=')[0]+'=').test(url)) return url;
+  return url+(url.indexOf('?')===-1?'?':'&')+param;
+}
+function dropboxRaw(url){
+  if(!url||!/dropbox\.com\//.test(url)) return url;
+  return addParam(url.replace(/[?&]dl=[01]\b/g,''),'raw=1');
+}
+function onedriveDirect(url){
+  let b64; try{ b64=btoa(unescape(encodeURIComponent(url))); }catch(e){ return null; }
+  return 'https://api.onedrive.com/v1.0/shares/u!'+b64.replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_')+'/root/content';
+}
+function parseVideo(url){
+  if(!url) return null; url=String(url).trim(); if(!url) return null;
+  const ig=url.match(/instagram\.com\/(?:[\w.]+\/)?(p|reel|reels|tv)\/([\w-]+)/);
+  if(ig) return mkVid('iframe','https://www.instagram.com/'+(ig[1]==='reels'?'reel':ig[1])+'/'+ig[2]+'/embed/captioned/',url);
+  if(/(?:facebook\.com\/(?:watch\/?\?|.*\/videos\/)|fb\.watch\/)/.test(url))
+    return mkVid('iframe','https://www.facebook.com/plugins/video.php?href='+encodeURIComponent(url)+'&show_text=false',url);
+  const dm=url.match(/(?:dailymotion\.com\/video\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+  if(dm) return mkVid('iframe','https://www.dailymotion.com/embed/video/'+dm[1],url);
+  const lo=url.match(/loom\.com\/(?:share|embed)\/([\w-]+)/);
+  if(lo) return mkVid('iframe','https://www.loom.com/embed/'+lo[1],url);
+  const st=url.match(/streamable\.com\/(?:e\/)?([\w-]+)/);
+  if(st) return mkVid('iframe','https://streamable.com/e/'+st[1],url);
+  const wi=url.match(/(?:wistia\.com|wi\.st)\/(?:medias|embed\/medias)\/([\w-]+)/);
+  if(wi) return mkVid('iframe','https://fast.wistia.net/embed/iframe/'+wi[1],url);
+  const gd=url.match(/drive\.google\.com\/(?:file\/d\/|open\?(?:.*&)?id=|uc\?(?:.*&)?id=)([\w-]{20,})/);
+  if(gd) return mkVid('iframe','https://drive.google.com/file/d/'+gd[1]+'/preview',url);
+  if(/dropbox\.com\/(scl\/|s\/)/.test(url)){ const r=dropboxRaw(url); return mkVid('file',r,r); }
+  if(/(?:1drv\.ms\/|onedrive\.live\.com\/)/.test(url)){
+    const d=onedriveDirect(url); if(d) return mkVid('file',d,url);
+    return mkVid('iframe',url.replace('/redir?','/embed?'),url);
+  }
+  if(/sharepoint\.com\//.test(url)) return mkVid('iframe',addParam(url,'action=embedview'),url);
+  const bx=url.match(/app\.box\.com\/(?:s|shared)\/([\w!.-]+)/);
+  if(bx) return mkVid('iframe','https://app.box.com/embed/s/'+bx[1]+'?showParentPath=false',url);
+  const mg=url.match(/mega\.nz\/(?:file|embed)\/([\w-]+#[\w-]+)/);
+  if(mg) return mkVid('iframe','https://mega.nz/embed/'+mg[1]+'!1!0',url);
+  const pc=url.match(/pcloud\.(?:com|link)\/publink\/show\?code=([\w]+)/);
+  if(pc) return mkVid('iframe','https://e.pcloud.link/publink/show?code='+pc[1],url);
+  if(/\.(jpe?g|png|webp|avif|gif|svg)(\?.*)?$/i.test(url)) return mkVid('image',url,url);
+  return mkVid('file',url,url);   // direct file or unknown host: try as video
+}
+
+
+/* ---- plain file player (browser default controls) ---- */
+function mountFile(info){
+  const box=$("#player"); box.innerHTML="";
+  const v=document.createElement("video"); v.src=info.src; v.controls=true; v.playsInline=true; v.preload="metadata"; box.appendChild(v);
+  api = {canTime:true, getTime:async()=>v.currentTime, seek:t=>{v.currentTime=t;v.play().catch(()=>{})}, pause:()=>v.pause()};
+  v.addEventListener("error",()=>{
+    // Dropbox: some phones refuse the share host. Retry once on Dropbox's direct host.
+    if(/dropbox\.com\//.test(info.src) && !info.retried){
+      const alt=info.src.replace("www.dropbox.com","dl.dropboxusercontent.com").replace(/[?&]raw=1/,"").replace(/[?&]dl=[01]/,"").replace(/\?&/,"?");
+      mountFile({kind:"file", src:alt, original:info.original, retried:true}); return;
+    }
+    const code=v.error&&v.error.code?" (error "+v.error.code+")":"";
+    box.innerHTML='<div class="empty">This link would not play here'+code+'.</div>';
+    api = {canTime:false, getTime:async()=>null, seek:()=>{}, pause:()=>{}};
+    const h=$("#playerHint"); h.textContent="Open the video in a new tab: ";
+    const a=document.createElement("a"); a.href=info.original; a.target="_blank"; a.rel="noopener"; a.textContent="open link";
+    h.appendChild(a); h.append(". Then type the time yourself.");
+    if(v.error&&(v.error.code===3||v.error.code===4)) h.append(" If it still fails, the phone may not support this video format. Ask your editor for an H.264 .mp4.");
+  });
+}
+
+async function setVideo(url){
+  url = url.trim(); if(!url) return;
+  videoUrl = url;
+  const box = $("#player"); box.innerHTML = ""; $("#playerHint").textContent = "";
+  api = {canTime:false, getTime:async()=>null, seek:()=>{}, pause:()=>{}};
+
+  const yt = ytId(url), vm = vimeoParts(url);
+  if(yt){
+    if(location.protocol==="file:") $("#playerHint").textContent = "Error 153? YouTube blocks players on files opened from your computer. It works once the site is on GitHub Pages, or run: python -m http.server, then open http://localhost:8000.";
+    box.innerHTML = '<div id="ytbox"></div>';
+    await loadYT();
+    const p = new YT.Player("ytbox",{videoId:yt,playerVars:{rel:0,playsinline:1}});
+    api = {canTime:true, getTime:async()=>p.getCurrentTime?p.getCurrentTime():null, seek:t=>{p.seekTo(t,true);p.playVideo&&p.playVideo()}, pause:()=>p.pauseVideo&&p.pauseVideo()};
+  } else if(vm){
+    const f=document.createElement("iframe");
+    f.src="https://player.vimeo.com/video/"+vm.id+(vm.h?"?h="+vm.h:""); f.allow="autoplay; fullscreen; picture-in-picture"; f.allowFullscreen=true;
+    box.appendChild(f); await loadVimeo();
+    const p = new Vimeo.Player(f);
+    api = {canTime:true, getTime:()=>p.getCurrentTime(), seek:t=>{p.setCurrentTime(t).then(()=>p.play()).catch(()=>{})}, pause:()=>{p.pause().catch(()=>{})}};
+  } else {
+    const info=parseVideo(url);
+    if(info.kind==="iframe"){
+      const f=document.createElement("iframe"); f.src=info.src; f.allow="autoplay; fullscreen; picture-in-picture"; f.allowFullscreen=true; box.appendChild(f);
+      $("#playerHint").textContent = "This site does not share the playing time. Read the time from the player and type it in the time box.";
+    } else if(info.kind==="file"){
+      mountFile(info);
+    } else {
+      box.innerHTML='<div class="empty">This link is an image, not a video.</div>';
+      return;
+    }
+  }
+  const saved = load();
+  state = saved || {client:params.get("client")||"",version:params.get("version")||"",general:"",items:[]};
+  if(!saved && !state.client) state.client = "";
+  syncFields(); render();
+}
+
+/* ---------- time follow ---------- */
+setInterval(async()=>{
+  if(!api.canTime || dirty || document.activeElement===$("#note")) return;
+  try{ const t=await api.getTime(); if(t!=null) $("#time").value=fmt(t); }catch(e){}
+},400);
+$("#time").addEventListener("input",()=>{dirty=true});
+$("#note").addEventListener("focus",async()=>{
+  if(api.canTime && !dirty){ try{ const t=await api.getTime(); if(t!=null) $("#time").value=fmt(t); api.pause(); }catch(e){} }
+});
+$("#nowBtn").onclick = async()=>{ dirty=false; if(!api.canTime){say("Cannot read time from this video type. Type it in.",true);return}
+  const t=await api.getTime(); if(t!=null) $("#time").value=fmt(t); };
+
+/* ---------- items ---------- */
+function addItem(){
+  const t = parseT($("#time").value);
+  const text = $("#note").value.trim();
+  if(t===null){ say("Enter a time like 1:25.",true); $("#time").focus(); return; }
+  if(!text){ say("Write what should change.",true); $("#note").focus(); return; }
+  state.items.push({id:Date.now()+Math.random(),t,cat:document.querySelector('input[name=cat]:checked').value,
+    pri:document.querySelector('input[name=pri]:checked').value,text,done:false});
+  $("#note").value=""; dirty=false; say("Added."); save(); render();
+}
+$("#addBtn").onclick = addItem;
+$("#note").addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)) addItem(); });
+
+function render(){
+  const items=[...state.items].sort((a,b)=>a.t-b.t);
+  $("#count").textContent = items.length?`(${items.length})`:"";
+  $("#noneMsg").hidden = items.length>0;
+  const ul=$("#list"); ul.innerHTML="";
+  items.forEach(it=>{
+    const li=document.createElement("li"); li.className="item"+(it.done?" done":"");
+    const ts=document.createElement("button"); ts.className="ts"; ts.textContent=fmt(it.t); ts.title="Jump to this time";
+    ts.onclick=()=>api.seek(it.t);
+    const tags=document.createElement("div"); tags.className="tags";
+    tags.innerHTML=""; tags.append(it.cat+" · ");
+    const pr=document.createElement("span"); pr.textContent=it.pri==="must"?"Must fix":"Nice to have"; if(it.pri==="must") pr.className="must"; tags.append(pr);
+    const p=document.createElement("p"); p.className="txt"; p.textContent=it.text;
+    const acts=document.createElement("div"); acts.className="acts";
+    const ed=document.createElement("button"); ed.className="small"; ed.textContent="Edit";
+    ed.onclick=()=>{ $("#time").value=fmt(it.t); dirty=true; $("#note").value=it.text;
+      const c=[...document.querySelectorAll('input[name=cat]')].find(r=>r.value===it.cat); if(c)c.checked=true;
+      const r=[...document.querySelectorAll('input[name=pri]')].find(r=>r.value===it.pri); if(r)r.checked=true;
+      state.items=state.items.filter(x=>x.id!==it.id); save(); render(); $("#note").focus(); };
+    const del=document.createElement("button"); del.className="small"; del.textContent="Delete";
+    del.onclick=()=>{ state.items=state.items.filter(x=>x.id!==it.id); save(); render(); };
+    acts.append(ed,del);
+    li.append(ts,tags,acts,p); ul.appendChild(li);
+  });
+}
+
+/* ---------- export ---------- */
+function buildText(){
+  const items=[...state.items].sort((a,b)=>a.t-b.t);
+  let s=`Feedback: ${title}\n`;
+  if(state.client) s+=`From: ${state.client}\n`;
+  if(state.version) s+=`Version: ${state.version}\n`;
+  if(videoUrl) s+=`Video: ${videoUrl}\n`;
+  s+=`Changes: ${items.length}\n\n`;
+  items.forEach(it=>{ s+=`[${fmt(it.t)}] ${it.cat} (${it.pri==="must"?"Must fix":"Nice to have"})\n${it.text}\n\n`; });
+  if(state.general) s+=`Overall comments:\n${state.general}\n`;
+  return s.trim();
+}
+function ready(){ if(!state.items.length && !state.general.trim()){ say("Add at least one change first.",true); return false } return true; }
+
+$("#sendMail").onclick=()=>{ if(!ready())return;
+  if(!CONFIG.editorEmail||CONFIG.editorEmail==="you@example.com"){ say("Editor email is not set in the site.",true); return; }
+  const body=buildText();
+  const url=`mailto:${CONFIG.editorEmail}?subject=${encodeURIComponent("Feedback: "+title+(state.version?" ("+state.version+")":""))}&body=${encodeURIComponent(body)}`;
+  if(url.length>1900){ navigator.clipboard&&navigator.clipboard.writeText(body); say("List is long. It was copied. Paste it into the email that opens.");}
+  else say("Opening your email app.");
+  location.href=url; };
+$("#sendWa").onclick=()=>{ if(!ready())return; window.open(`https://wa.me/${CONFIG.whatsapp||""}?text=${encodeURIComponent(buildText())}`,"_blank","noopener"); };
+$("#sendGrp").onclick=async()=>{ if(!ready())return;
+  try{ await navigator.clipboard.writeText(buildText()); say("Copied. Paste it in the group chat."); }catch(e){ say("Copy blocked. Use Copy text, then open the group.",true);}
+  window.open(CONFIG.whatsappGroup,"_blank","noopener"); };
+$("#copyBtn").onclick=async()=>{ if(!ready())return;
+  try{ await navigator.clipboard.writeText(buildText()); say("Copied. Paste it anywhere."); }catch(e){ say("Copy blocked by browser. Use Download .txt.",true);} };
+$("#dlBtn").onclick=()=>{ if(!ready())return;
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([buildText()],{type:"text/plain"}));
+  a.download=(title.replace(/[^\w]+/g,"-")||"feedback")+"-feedback.txt"; a.click(); URL.revokeObjectURL(a.href); say("Downloaded."); };
+$("#sendForm").onclick=async()=>{ if(!ready())return; say("Sending...");
+  try{ const r=await fetch(CONFIG.formEndpoint,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+      body:JSON.stringify({project:title,client:state.client,version:state.version,video:videoUrl,message:buildText()})});
+    if(r.ok) say("Sent. Thank you."); else throw 0; }catch(e){ say("Send failed. Use email or Copy text instead.",true);} };
+
+/* ---------- fields ---------- */
+function syncFields(){ $("#client").value=state.client||""; $("#version").value=state.version||""; $("#general").value=state.general||""; }
+["client","version","general"].forEach(k=>$("#"+k).addEventListener("input",e=>{ state[k]=e.target.value; save(); }));
+
+/* ---------- start ---------- */
+const start = params.get("video")||CONFIG.defaultVideo;
+if(start) setVideo(start); else { syncFields(); render(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Make client link</title>
+<style>
+:root{--bg:#eef1f4;--panel:#fff;--ink:#161a22;--muted:#5c6575;--line:#d7dce3;--accent:#3a4cff;--ok:#1c8c5a;--bad:#c93a3a}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--panel:#1b1f27;--ink:#eceff4;--muted:#9aa3b2;--line:#2c323d;--accent:#7b8aff;--ok:#4cc38a;--bad:#ff7a7a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:640px;margin:0 auto;padding:20px 14px 60px}
+h1{font-size:1.6rem;margin:0 0 4px}
+p.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+label{display:block;font-size:.85rem;font-weight:600;margin:0 0 4px}
+input[type=text],input[type=url]{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px}
+.field{margin-bottom:14px}
+.chk{display:flex;gap:8px;align-items:center;font-weight:500;font-size:.95rem}
+.chk input{width:20px;height:20px}
+button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:inherit;border-radius:6px;padding:10px 14px;min-height:44px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.out{word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;font-size:.9rem;margin:0 0 10px;min-height:44px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.hint{color:var(--muted);font-size:.85rem;margin:6px 0 0}
+#st{min-height:1.4em;color:var(--ok);font-size:.9rem;margin:10px 0 0}
+#st.err{color:var(--bad)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Make client link</h1>
+  <p class="sub">Fill in the details. Copy the link. Send it to your client.</p>
+
+  <div class="card">
+    <div class="field">
+      <label for="base">Review page address</label>
+      <input id="base" type="url" placeholder="https://USERNAME.github.io/review/">
+      <p class="hint" id="baseHint">Filled in automatically on your live site. Saved in this browser.</p>
+    </div>
+    <div class="field">
+      <label for="video">Video link</label>
+      <input id="video" type="url" placeholder="YouTube, Vimeo, Dropbox, Drive, or any video link">
+      <p class="hint">YouTube and Vimeo give automatic timestamps. Dropbox and direct files do too. Drive, Instagram and others need the time typed.</p>
+    </div>
+    <div class="field">
+      <label for="editor">Edited by (your name)</label>
+      <input id="editor" type="text" placeholder="Your name or studio">
+      <p class="hint">Shown at the top of the review page. Remembered in this browser.</p>
+    </div>
+    <div class="field">
+      <label for="project">Project name</label>
+      <input id="project" type="text" placeholder="Anandu Wedding Teaser">
+    </div>
+    <div class="field">
+      <label for="client">Client name (optional)</label>
+      <input id="client" type="text" placeholder="Anandu">
+    </div>
+    <div class="field">
+      <label for="version">Version (optional)</label>
+      <input id="version" type="text" placeholder="V1">
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <label>Client link</label>
+    <p class="out" id="out">Fill in the video link first.</p>
+    <div class="btns">
+      <button class="primary" id="copy">Copy link</button>
+      <button id="copyMsg">Copy message</button>
+      <button id="open">Open preview</button>
+      <button id="wa">Share on WhatsApp</button>
+    </div>
+    <p id="st" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const ids=["base","video","editor","project","client","version"];
+const saved=(()=>{try{return localStorage.getItem("mk:base")||""}catch(e){return""}})();
+if(location.protocol.startsWith("http")){
+  $("#base").value=location.href.replace(/make-link\.html.*$/,"");
+}else{
+  $("#base").value=saved;
+  $("#baseHint").textContent="Opened from your computer. Type your GitHub Pages address, for example https://USERNAME.github.io/review/";
+}
+
+try{ $("#editor").value = localStorage.getItem("mk:editor")||""; }catch(e){}
+
+function cleanVideo(u){
+  u=u.trim();
+  const m=u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+  return m?"https://youtu.be/"+m[1]:u;
+}
+function build(){
+  const v=cleanVideo($("#video").value);
+  let base=$("#base").value.trim();
+  if(!v||!base) return "";
+  if(!/\/$|\.html$/.test(base)) base+="/";
+  const q=new URLSearchParams();
+  q.set("video",v);
+  [["editor","editor"],["project","project"],["version","version"],["client","client"]].forEach(([id,k])=>{
+    const x=$("#"+id).value.trim(); if(x) q.set(k,x);
+  });
+  return base+"?"+q.toString();
+}
+function update(){
+  const l=build();
+  $("#out").textContent=l||"Fill in the video link and page address.";
+  try{localStorage.setItem("mk:base",$("#base").value)}catch(e){}
+  try{localStorage.setItem("mk:editor",$("#editor").value)}catch(e){}
+}
+function say(m,e){const s=$("#st");s.textContent=m;s.className=e?"err":""}
+function need(){const l=build();if(!l){say("Add the video link and page address first.",true);return null}return l}
+function msg(l){
+  const n=$("#client").value.trim(),p=$("#project").value.trim()||"your video";
+  return `Hi${n?" "+n:""}, please review ${p} here:\n${l}\nWatch the video and add notes where you want changes. Press Send when done.`;
+}
+async function copy(t,ok){try{await navigator.clipboard.writeText(t);say(ok)}catch(e){say("Copy blocked. Select the link and copy by hand.",true)}}
+
+$("#copy").onclick=()=>{const l=need();if(l)copy(l,"Link copied.")};
+$("#copyMsg").onclick=()=>{const l=need();if(l)copy(msg(l),"Message copied.")};
+$("#open").onclick=()=>{const l=need();if(l)window.open(l,"_blank","noopener")};
+$("#wa").onclick=()=>{const l=need();if(l)window.open("https://wa.me/?text="+encodeURIComponent(msg(l)),"_blank","noopener")};
+ids.forEach(i=>$("#"+i).addEventListener("input",update));
+update();
+</script>
+</body>
+</html>
