@@ -2,96 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#161a21">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Video review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#eef1f4; --panel:#ffffff; --ink:#161a22; --muted:#5c6575; --line:#d7dce3;
-  --accent:#3a4cff; --accent-ink:#ffffff; --pin:#ff9f1c; --ok:#1c8c5a; --bad:#c93a3a;
-  --head:"Bricolage Grotesque",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
-}
-@media (prefers-color-scheme:dark){
-  :root{--bg:#12151b;--panel:#1b1f27;--ink:#eceff4;--muted:#9aa3b2;--line:#2c323d;--accent:#7b8aff;--accent-ink:#10131a;--pin:#ffb347;--ok:#4cc38a;--bad:#ff7a7a}
+  color-scheme:dark;
+  --bg:#0f1115; --panel:#161a21; --raised:#1c212a; --ink:#e8ebf0; --muted:#8d96a5; --faint:#5b6472;
+  --line:#242a34; --line-strong:#333b48;
+  --accent:#4fd1c5; --accent-hover:#7be3d9; --accent-ink:#04201d; --accent-soft:rgba(79,209,197,.14);
+  --pin:rgba(242,184,75,.12); --pin-ink:#f2b84b; --pin-line:rgba(242,184,75,.38);
+  --ok:#5ad19a; --bad:#ff7b70;
+  --font:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Consolas,monospace;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-h1,h2{font-family:var(--head);margin:0;letter-spacing:-.01em}
-.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
-header{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;justify-content:space-between;margin-bottom:16px}
-h1{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700}
-.by{color:var(--muted);font-size:.95rem}
-.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
-@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-.card+.card{margin-top:16px}
-h2{font-size:1.15rem;font-weight:700;margin-bottom:10px}
-label{display:block;font-size:.85rem;font-weight:600;margin:0 0 4px}
+html{height:100%;scrollbar-color:var(--line-strong) transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--font);-webkit-font-smoothing:antialiased;padding:0 0 env(safe-area-inset-bottom)}
+h1,h2{margin:0;font-family:var(--font)}
+.topbar{background:var(--panel);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.topbar-in{max-width:1180px;margin:0 auto;padding:14px 16px;display:flex;gap:12px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:32px;height:32px;border-radius:7px;background:var(--accent);position:relative;flex:none}
+.mark::after{content:"";position:absolute;left:12px;top:10px;border-left:11px solid var(--accent-ink);border-top:6px solid transparent;border-bottom:6px solid transparent}
+h1{font-size:clamp(1.05rem,2vw,1.3rem);font-weight:600;letter-spacing:-.01em;line-height:1.25;overflow-wrap:anywhere}
+.by{color:var(--muted);font-size:.82rem;line-height:1.3}
+.by:empty{display:none}
+.badge{font:500 .72rem/1 var(--mono);color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:6px 11px;white-space:nowrap}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px}
+h2{font-size:.9rem;font-weight:600;letter-spacing:.005em;color:var(--ink);margin:-20px -20px 18px;padding:13px 20px;border-bottom:1px solid var(--line)}
+label{display:block;font-size:.8rem;font-weight:500;color:var(--muted);margin:0 0 6px}
 input,select,textarea,button{font:inherit;color:inherit}
-input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px}
-textarea{resize:vertical;min-height:84px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line-strong);border-radius:5px;padding:9px 11px;transition:border-color .15s,box-shadow .15s}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);outline:none}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.row{display:flex;gap:10px;flex-wrap:wrap}
+.field{margin-bottom:16px}
+button{cursor:pointer;border:1px solid var(--line-strong);background:var(--raised);border-radius:5px;padding:9px 14px;font-weight:500;transition:background .15s,border-color .15s,color .15s}
+button:hover{background:#242a35;border-color:#445062}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+button.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.hint{color:var(--muted);font-size:.8rem;margin:8px 0 0}
+.hint a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr);gap:16px}}
+.card+.card{margin-top:20px}
+@media (max-width:900px){.card+.card{margin-top:16px}}
+.card.mon{padding:0;overflow:hidden}
+.mon .hint{padding:0 16px 14px;margin:0}
+.mon .hint:empty{display:none}
+.mon .hint:not(:empty){padding-top:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
 .row>*{flex:1 1 140px}
-.field{margin-bottom:12px}
-button{cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:9px 14px;font-weight:600}
-button:hover{border-color:var(--accent)}
-button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-button.small{padding:4px 9px;font-size:.82rem}
-.linkbar{display:flex;gap:8px;margin-bottom:12px}
-.linkbar input{flex:1}
-.player{position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden}
+textarea{resize:vertical;min-height:96px}
+button.small{padding:4px 10px;font-size:.8rem;color:var(--muted);background:transparent;border-color:transparent}
+button.small:hover{color:var(--ink);background:var(--raised);border-color:var(--line-strong)}
+button.small.del:hover{color:var(--bad)}
+.player{position:relative;aspect-ratio:16/9;background:#050607}
 .player iframe,.player video,.player>div{position:absolute;inset:0;width:100%;height:100%;border:0}
-.empty{display:grid;place-items:center;color:#aab;text-align:center;padding:20px;font-size:.95rem}
-.hint{color:var(--muted);font-size:.85rem;margin:8px 0 0}
+.empty{display:grid;place-items:center;color:var(--muted);text-align:center;padding:24px;font-size:.92rem;max-width:34ch;margin:auto}
 .timerow{display:flex;gap:8px}
-.timerow input{max-width:130px;font-variant-numeric:tabular-nums;font-weight:600}
+.timerow input{max-width:132px;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.15rem;font-weight:600;color:var(--accent);letter-spacing:.02em;text-align:center}
 .timerow button{white-space:nowrap}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .pills input{position:absolute;opacity:0;width:0}
-.pills label{margin:0;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-weight:500;font-size:.88rem;cursor:pointer;background:var(--bg)}
-.pills input:checked+label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pills label{margin:0;border:1px solid var(--line-strong);border-radius:5px;padding:6px 12px;font-weight:500;font-size:.85rem;color:var(--ink);cursor:pointer;background:var(--bg);transition:background .15s,border-color .15s,color .15s}
+.pills label:hover{border-color:#445062}
+.pills input:checked+label{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
 .pills input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
 .list{list-style:none;margin:0;padding:0;max-height:520px;overflow:auto}
-.item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;padding:10px 0;border-top:1px solid var(--line)}
-.item:first-child{border-top:0}
-.ts{background:var(--pin);color:#1a1100;border:0;font-variant-numeric:tabular-nums;font-weight:700;border-radius:5px;padding:2px 8px;height:fit-content}
-.tags{font-size:.8rem;color:var(--muted)}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0;padding-top:0}
+.ts{background:var(--pin);color:var(--pin-ink);border:1px solid var(--pin-line);font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:.8rem;border-radius:4px;padding:2px 8px;height:fit-content}
+.ts:hover{background:rgba(242,184,75,.2);border-color:var(--pin-ink)}
+.tags{font-size:.78rem;color:var(--muted)}
 .must{color:var(--bad);font-weight:600}
 .txt{grid-column:2;margin:0;white-space:pre-wrap;word-break:break-word}
 .acts{grid-column:3;grid-row:1 / span 2;display:flex;flex-direction:column;gap:4px}
 .item.done .txt{text-decoration:line-through;opacity:.55}
-.count{color:var(--muted);font-weight:500;font-size:.9rem}
+.count{color:var(--muted);font-weight:400;font-family:var(--mono);font-size:.82rem;margin-left:4px}
 .sendbtns{display:flex;flex-wrap:wrap;gap:8px}
-#status{min-height:1.4em;margin:10px 0 0;font-size:.9rem;color:var(--ok)}
+#status{min-height:1.4em;margin:12px 0 0;font-size:.88rem;color:var(--ok)}
 #status.err{color:var(--bad)}
 .none{color:var(--muted);margin:0}
-@media (pointer:coarse){button{min-height:44px}button.small{min-height:40px;padding:6px 12px}.ts{min-height:36px;padding:4px 12px}.pills label{padding:9px 14px}}
-@media (max-width:600px){.wrap{padding:12px 10px 50px}.card{padding:12px}.list{max-height:none}.linkbar{flex-direction:column}.timerow input{max-width:none;flex:1}.sendbtns button{flex:1 1 45%}}
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+.imgbtns{display:flex;flex-wrap:wrap;gap:8px}
+.thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.thumbs:empty{display:none}
+.thumb{position:relative}
+.thumb-open,.imgs-open{display:block;padding:0;min-height:0;line-height:0;border:1px solid var(--line-strong);border-radius:5px;overflow:hidden;background:#000}
+.thumb-open img{width:104px;height:64px;object-fit:cover;display:block}
+.thumb-x{position:absolute;top:-8px;right:-8px;width:24px;height:24px;min-height:0;padding:0;border-radius:50%;background:var(--raised);font-size:15px;line-height:1}
+.thumb-x:hover{color:var(--bad)}
+.item-imgs{grid-column:2 / 4;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.item-imgs:empty{display:none}
+.imgs-open img{width:84px;height:52px;object-fit:cover;display:block}
+#imgNote{margin-top:10px}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(5,6,7,.97);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.ov-in{display:flex;flex-direction:column;height:100%}
+.ov-bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+.ov-tools,.ov-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ov-tools .lbl{font-size:.8rem;color:var(--muted)}
+.ov-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:12px}
+#ovCanvas{max-width:100%;max-height:100%;background:#000;touch-action:none;cursor:crosshair;border-radius:4px}
+#ovCanvas.view{cursor:default}
+button.sw{width:34px;height:34px;min-height:0;padding:0;border-radius:50%;background:var(--c);border:2px solid var(--line-strong)}
+button.sw:hover{background:var(--c);border-color:var(--ink)}
+button.sw.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent)}
+#addCard.drop{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+@media (pointer:coarse){button{min-height:44px}.thumb-x{width:28px;height:28px}button.small{min-height:40px;padding:6px 12px}.ts{min-height:36px;padding:4px 12px}.pills label{padding:10px 14px}}
+@media (max-width:600px){.topbar-in{padding:12px 10px}.wrap{padding:14px 10px 50px}.card{padding:14px}h2{margin:-14px -14px 14px;padding:12px 14px}.list{max-height:none}.timerow input{max-width:none;flex:1}.sendbtns button{flex:1 1 45%}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-<header>
-  <h1 id="title">Video review</h1>
-  <div class="by" id="by"></div>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <h1 id="title">Video review</h1>
+        <div class="by" id="by"></div>
+      </div>
+    </div>
+    <span class="badge" id="badge">Client review</span>
+  </div>
 </header>
+
+<div class="wrap">
 
 <div class="grid">
   <!-- LEFT: player + add note -->
   <div>
-    <div class="card">
+    <div class="card mon">
       <div class="player" id="player"><div class="empty">No video loaded. Open the review link your editor sent you.</div></div>
       <p class="hint" id="playerHint"></p>
     </div>
 
-    <div class="card">
+    <div class="card" id="addCard">
       <h2>Add a change request</h2>
       <div class="field">
         <label for="time">Time in video</label>
@@ -113,8 +167,18 @@ button.small{padding:4px 9px;font-size:.82rem}
         <label for="note">What should change?</label>
         <textarea id="note" placeholder="Example: Cut this shot 2 seconds earlier. The music is too loud here."></textarea>
       </div>
+      <div class="field">
+        <label>Screenshots or reference images (optional)</label>
+        <div class="imgbtns">
+          <button type="button" id="capBtn" hidden>Capture frame</button>
+          <button type="button" id="imgBtn">Add image</button>
+          <input type="file" id="imgFile" accept="image/*" multiple hidden>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+        <p class="hint"><span id="capHint"></span>You can also paste or drop images here. New images open in an editor: draw if needed, then save. Tap a saved image to edit it again. Up to 4 per change.</p>
+      </div>
       <button class="primary" id="addBtn">Add to list</button>
-      <span class="hint">Ctrl+Enter also adds.</span>
+      <span class="hint" style="margin-left:8px">Ctrl+Enter also adds.</span>
     </div>
   </div>
 
@@ -128,9 +192,9 @@ button.small{padding:4px 9px;font-size:.82rem}
 
     <div class="card">
       <h2>Send to editor</h2>
-      <div class="row field">
-        <div><label for="client">Your name</label><input id="client" autocomplete="name"></div>
-        <div><label for="version">Version reviewed</label><input id="version" placeholder="Example: V1 or Draft 2"></div>
+      <div class="field">
+        <label for="client">Your name</label>
+        <input id="client" autocomplete="name">
       </div>
       <div class="field">
         <label for="general">Overall comments (optional)</label>
@@ -138,12 +202,13 @@ button.small{padding:4px 9px;font-size:.82rem}
       </div>
       <div class="sendbtns">
         <button id="sendForm" class="primary" hidden>Send feedback</button>
-        <button id="sendMail" class="primary">Send by email</button>
-        <button id="sendWa">Send on WhatsApp</button>
+        <button id="sendWa" class="primary">Send on WhatsApp</button>
+        <button id="repBtn">Download PDF</button>
         <button id="sendGrp" hidden>Copy and open group</button>
         <button id="copyBtn">Copy text</button>
         <button id="dlBtn">Download .txt</button>
       </div>
+      <p class="hint" id="imgNote" hidden>When a change has images, Send on WhatsApp sends a PDF that holds the notes and images. If sharing is not available on this device, the PDF downloads. Attach it in WhatsApp.</p>
       <p id="status" role="status" aria-live="polite"></p>
       <p class="hint">Notes save in this browser automatically. Nothing is sent until you press a send button.</p>
     </div>
@@ -151,11 +216,30 @@ button.small{padding:4px 9px;font-size:.82rem}
 </div>
 </div>
 
+<div class="ov" id="ov" hidden role="dialog" aria-modal="true" aria-label="Image">
+  <div class="ov-in">
+    <div class="ov-bar">
+      <div class="ov-tools" id="ovTools">
+        <span class="lbl">Draw</span>
+        <button type="button" class="sw on" data-c="#ff4d4d" style="--c:#ff4d4d" aria-label="Red pen"></button>
+        <button type="button" class="sw" data-c="#ffd23f" style="--c:#ffd23f" aria-label="Yellow pen"></button>
+        <button type="button" class="sw" data-c="#ffffff" style="--c:#ffffff" aria-label="White pen"></button>
+        <button type="button" id="ovUndo">Undo</button>
+        <button type="button" id="ovClear">Clear drawing</button>
+      </div>
+      <div class="ov-act">
+        <button type="button" id="ovCancel">Close</button>
+        <button type="button" class="primary" id="ovSave">Save drawing</button>
+      </div>
+    </div>
+    <div class="ov-stage"><canvas id="ovCanvas"></canvas></div>
+  </div>
+</div>
+
 <script>
 /* ============ EDITOR SETTINGS: change these ============ */
 const CONFIG = {
   editorName: "Your Name",
-  editorEmail: "you@example.com",
   whatsapp: "",            // your number, digits only with country code, e.g. "919876543210". Leave "" and client picks the chat or group.
   whatsappGroup: "",       // optional group invite link, e.g. "https://chat.whatsapp.com/XXXX". Adds a "Copy and open group" button.
   formEndpoint: "",        // optional Formspree URL, e.g. "https://formspree.io/f/xxxxxxx". Leave "" to hide.
@@ -183,7 +267,7 @@ const parseT = str => { if(!str) return null; const p=str.trim().replace(/[.,;]/
   return p.reduce((a,n)=>a*60+n,0); };
 const say = (msg,err) => { const e=$("#status"); e.textContent=msg; e.className=err?"err":""; };
 const key = () => "fb:"+(videoUrl||"none");
-const save = () => { try{localStorage.setItem(key(),JSON.stringify(state))}catch(e){} };
+const save = () => { try{localStorage.setItem(key(),JSON.stringify(state));return true}catch(e){ say("Browser storage is full. Images may be lost on refresh. Press Download PDF now.",true); return false} };
 const load = () => { try{const d=JSON.parse(localStorage.getItem(key())); if(d) return d}catch(e){} return null; };
 
 /* ---------- setup ---------- */
@@ -191,11 +275,11 @@ const title = params.get("project")||CONFIG.projectTitle;
 $("#title").textContent = title; document.title = title;
 const editorName = params.get("editor") || CONFIG.editorName;
 $("#by").textContent = editorName ? "Edited by "+editorName : "";
+const verQ = params.get("version"); if(verQ) $("#badge").textContent = "Version "+verQ;
 $("#cats").innerHTML = CATS.map((c,i)=>`<input type="radio" name="cat" id="c${i}" value="${c}" ${i===0?"checked":""}><label for="c${i}">${c}</label>`).join("");
 $("#pris").innerHTML = PRIS.map((p,i)=>`<input type="radio" name="pri" id="p${i}" value="${p[0]}" ${i===0?"checked":""}><label for="p${i}">${p[1]}</label>`).join("");
 if(CONFIG.whatsappGroup) $("#sendGrp").hidden = false;
 if(CONFIG.formEndpoint) $("#sendForm").hidden = false;
-if(!CONFIG.editorEmail || CONFIG.editorEmail==="you@example.com") { /* keep button, will warn */ }
 
 /* ---------- video loading ---------- */
 function ytId(u){ const m=u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/); return m&&m[1]; }
@@ -261,11 +345,29 @@ function parseVideo(url){
 }
 
 
+
+function grabCors(u,t){ return new Promise((res,rej)=>{
+  const c=document.createElement("video"); c.crossOrigin="anonymous"; c.muted=true; c.preload="auto"; c.playsInline=true;
+  let tm; const done=(f,x)=>{ clearTimeout(tm); c.onerror=c.onseeked=c.onloadedmetadata=null; c.removeAttribute("src"); c.load(); f(x); };
+  tm=setTimeout(()=>done(rej,new Error("timeout")),20000);
+  c.onerror=()=>done(rej,new Error("load"));
+  c.onloadedmetadata=()=>{ c.currentTime=Math.max(t,0.01); };
+  c.onseeked=()=>{ try{ const k=Math.min(1,1280/c.videoWidth), cv=document.createElement("canvas"); cv.width=Math.round(c.videoWidth*k); cv.height=Math.round(c.videoHeight*k);
+    cv.getContext("2d").drawImage(c,0,0,cv.width,cv.height); done(res,cv.toDataURL("image/jpeg",.85)); }catch(e){ done(rej,e); } };
+  c.src=u; }); }
+
 /* ---- plain file player (browser default controls) ---- */
 function mountFile(info){
   const box=$("#player"); box.innerHTML="";
   const v=document.createElement("video"); v.src=info.src; v.controls=true; v.playsInline=true; v.preload="metadata"; box.appendChild(v);
-  api = {canTime:true, getTime:async()=>v.currentTime, seek:t=>{v.currentTime=t;v.play().catch(()=>{})}, pause:()=>v.pause()};
+  api = {canTime:true, getTime:async()=>v.currentTime, seek:t=>{v.currentTime=t;v.play().catch(()=>{})}, pause:()=>v.pause(),
+    capture:async()=>{ if(!v.videoWidth) return null;
+      try{ const k=Math.min(1,1280/v.videoWidth), c=document.createElement("canvas"); c.width=Math.round(v.videoWidth*k); c.height=Math.round(v.videoHeight*k); c.getContext("2d").drawImage(v,0,0,c.width,c.height); return c.toDataURL("image/jpeg",.85); }catch(e){}
+      const t=v.currentTime, srcs=[info.src];
+      if(/dropbox\.com\//.test(info.src)) srcs.push(info.src.replace("www.dropbox.com","dl.dropboxusercontent.com").replace(/[?&]raw=1/,"").replace(/[?&]dl=[01]/,"").replace(/\?&/,"?"));
+      for(const u of srcs){ try{ const d=await grabCors(u,t); if(d) return d; }catch(e){} }
+      return null; }};
+  updateCap();
   v.addEventListener("error",()=>{
     // Dropbox: some phones refuse the share host. Retry once on Dropbox's direct host.
     if(/dropbox\.com\//.test(info.src) && !info.retried){
@@ -275,7 +377,7 @@ function mountFile(info){
     const code=v.error&&v.error.code?" (error "+v.error.code+")":"";
     box.innerHTML='<div class="empty">This link would not play here'+code+'.</div>';
     api = {canTime:false, getTime:async()=>null, seek:()=>{}, pause:()=>{}};
-    const h=$("#playerHint"); h.textContent="Open the video in a new tab: ";
+    updateCap(); const h=$("#playerHint"); h.textContent="Open the video in a new tab: ";
     const a=document.createElement("a"); a.href=info.original; a.target="_blank"; a.rel="noopener"; a.textContent="open link";
     h.appendChild(a); h.append(". Then type the time yourself.");
     if(v.error&&(v.error.code===3||v.error.code===4)) h.append(" If it still fails, the phone may not support this video format. Ask your editor for an H.264 .mp4.");
@@ -313,6 +415,7 @@ async function setVideo(url){
       return;
     }
   }
+  updateCap();
   const saved = load();
   state = saved || {client:params.get("client")||"",version:params.get("version")||"",general:"",items:[]};
   if(!saved && !state.client) state.client = "";
@@ -338,8 +441,8 @@ function addItem(){
   if(t===null){ say("Enter a time like 1:25.",true); $("#time").focus(); return; }
   if(!text){ say("Write what should change.",true); $("#note").focus(); return; }
   state.items.push({id:Date.now()+Math.random(),t,cat:document.querySelector('input[name=cat]:checked').value,
-    pri:document.querySelector('input[name=pri]:checked').value,text,done:false});
-  $("#note").value=""; dirty=false; say("Added."); save(); render();
+    pri:document.querySelector('input[name=pri]:checked').value,text,imgs:pending.slice(),done:false});
+  $("#note").value=""; dirty=false; pending=[]; renderThumbs(); say("Added."); save(); render();
 }
 $("#addBtn").onclick = addItem;
 $("#note").addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)) addItem(); });
@@ -348,6 +451,7 @@ function render(){
   const items=[...state.items].sort((a,b)=>a.t-b.t);
   $("#count").textContent = items.length?`(${items.length})`:"";
   $("#noneMsg").hidden = items.length>0;
+  $("#imgNote").hidden = !items.some(i=>i.imgs&&i.imgs.length); warmReport();
   const ul=$("#list"); ul.innerHTML="";
   items.forEach(it=>{
     const li=document.createElement("li"); li.className="item"+(it.done?" done":"");
@@ -359,14 +463,16 @@ function render(){
     const p=document.createElement("p"); p.className="txt"; p.textContent=it.text;
     const acts=document.createElement("div"); acts.className="acts";
     const ed=document.createElement("button"); ed.className="small"; ed.textContent="Edit";
-    ed.onclick=()=>{ $("#time").value=fmt(it.t); dirty=true; $("#note").value=it.text;
+    ed.onclick=()=>{ $("#time").value=fmt(it.t); dirty=true; $("#note").value=it.text; pending=(it.imgs||[]).slice(); renderThumbs();
       const c=[...document.querySelectorAll('input[name=cat]')].find(r=>r.value===it.cat); if(c)c.checked=true;
       const r=[...document.querySelectorAll('input[name=pri]')].find(r=>r.value===it.pri); if(r)r.checked=true;
       state.items=state.items.filter(x=>x.id!==it.id); save(); render(); $("#note").focus(); };
-    const del=document.createElement("button"); del.className="small"; del.textContent="Delete";
+    const del=document.createElement("button"); del.className="small del"; del.textContent="Delete";
     del.onclick=()=>{ state.items=state.items.filter(x=>x.id!==it.id); save(); render(); };
     acts.append(ed,del);
-    li.append(ts,tags,acts,p); ul.appendChild(li);
+    const gal=document.createElement("div"); gal.className="item-imgs";
+    (it.imgs||[]).forEach((d,i)=>{ const b=document.createElement("button"); b.type="button"; b.className="imgs-open"; b.title="View image"; const im=document.createElement("img"); im.src=d; im.alt="Image "+(i+1)+" for "+fmt(it.t); b.append(im); b.onclick=()=>openOv(d,false); gal.append(b); });
+    li.append(ts,tags,acts,p,gal); ul.appendChild(li);
   });
 }
 
@@ -378,20 +484,26 @@ function buildText(){
   if(state.version) s+=`Version: ${state.version}\n`;
   if(videoUrl) s+=`Video: ${videoUrl}\n`;
   s+=`Changes: ${items.length}\n\n`;
-  items.forEach(it=>{ s+=`[${fmt(it.t)}] ${it.cat} (${it.pri==="must"?"Must fix":"Nice to have"})\n${it.text}\n\n`; });
+  items.forEach(it=>{ s+=`[${fmt(it.t)}] ${it.cat} (${it.pri==="must"?"Must fix":"Nice to have"})\n${it.text}\n${it.imgs&&it.imgs.length?"Images: "+it.imgs.length+" (in the PDF report)\n":""}\n`; });
   if(state.general) s+=`Overall comments:\n${state.general}\n`;
   return s.trim();
 }
 function ready(){ if(!state.items.length && !state.general.trim()){ say("Add at least one change first.",true); return false } return true; }
 
-$("#sendMail").onclick=()=>{ if(!ready())return;
-  if(!CONFIG.editorEmail||CONFIG.editorEmail==="you@example.com"){ say("Editor email is not set in the site.",true); return; }
-  const body=buildText();
-  const url=`mailto:${CONFIG.editorEmail}?subject=${encodeURIComponent("Feedback: "+title+(state.version?" ("+state.version+")":""))}&body=${encodeURIComponent(body)}`;
-  if(url.length>1900){ navigator.clipboard&&navigator.clipboard.writeText(body); say("List is long. It was copied. Paste it into the email that opens.");}
-  else say("Opening your email app.");
-  location.href=url; };
-$("#sendWa").onclick=()=>{ if(!ready())return; window.open(`https://wa.me/${CONFIG.whatsapp||""}?text=${encodeURIComponent(buildText())}`,"_blank","noopener"); };
+const hasImgs=()=>state.items.some(i=>i.imgs&&i.imgs.length);
+function saveReport(f){ const a=document.createElement("a"); a.href=URL.createObjectURL(f); a.download=f.name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
+$("#sendWa").onclick=async()=>{ if(!ready())return;
+  let text=buildText();
+  if(hasImgs()){
+    let f=pdfCache.file&&pdfCache.sig===sigOf()?pdfCache.file:null;
+    if(!f){ say("Preparing PDF..."); try{ f=await getReport(); }catch(e){ say("Could not build the PDF. Use Copy text instead.",true); return; } }
+    text+="\n\nFull PDF report with images is attached.";
+    if(navigator.canShare && navigator.canShare({files:[f]})){
+      try{ await navigator.share({files:[f],text,title}); say("Shared."); return; }catch(e){ if(e&&e.name==="AbortError") return; } }
+    saveReport(f);
+    say("PDF downloaded. WhatsApp opened. Attach the downloaded PDF to the chat, then send.");
+  }
+  window.open(`https://wa.me/${CONFIG.whatsapp||""}?text=${encodeURIComponent(text)}`,"_blank","noopener"); };
 $("#sendGrp").onclick=async()=>{ if(!ready())return;
   try{ await navigator.clipboard.writeText(buildText()); say("Copied. Paste it in the group chat."); }catch(e){ say("Copy blocked. Use Copy text, then open the group.",true);}
   window.open(CONFIG.whatsappGroup,"_blank","noopener"); };
@@ -406,10 +518,188 @@ $("#sendForm").onclick=async()=>{ if(!ready())return; say("Sending...");
     if(r.ok) say("Sent. Thank you."); else throw 0; }catch(e){ say("Send failed. Use email or Copy text instead.",true);} };
 
 /* ---------- fields ---------- */
-function syncFields(){ $("#client").value=state.client||""; $("#version").value=state.version||""; $("#general").value=state.general||""; }
-["client","version","general"].forEach(k=>$("#"+k).addEventListener("input",e=>{ state[k]=e.target.value; save(); }));
+function syncFields(){ state.version=params.get("version")||""; if(!state.client) state.client=params.get("client")||""; $("#client").value=state.client||""; $("#general").value=state.general||""; }
+["client","general"].forEach(k=>$("#"+k).addEventListener("input",e=>{ state[k]=e.target.value; save(); warmReport(); }));
+
+
+/* ---------- images ---------- */
+const MAX_IMGS=4;
+let pending=[];
+function updateCap(){
+  const ok=!!api.capture;
+  $("#capBtn").hidden=!ok;
+  $("#capHint").textContent = ok ? "Capture frame grabs the picture at this time. " : "This video type does not allow frame capture. Pause the video and take a screenshot (phone: power + volume down), then press Add image and pick it. ";
+}
+function renderThumbs(){
+  const box=$("#thumbs"); box.innerHTML="";
+  pending.forEach((src,i)=>{
+    const w=document.createElement("div"); w.className="thumb";
+    const o=document.createElement("button"); o.type="button"; o.className="thumb-open"; o.title="Tap to draw on this image";
+    const im=document.createElement("img"); im.src=src; im.alt="Attached image "+(i+1); o.append(im);
+    o.onclick=()=>openOv(src,true,n=>{ pending[i]=n; renderThumbs(); });
+    const x=document.createElement("button"); x.type="button"; x.className="thumb-x"; x.textContent="\u00d7"; x.setAttribute("aria-label","Remove image "+(i+1));
+    x.onclick=()=>{ pending.splice(i,1); renderThumbs(); };
+    w.append(o,x); box.appendChild(w);
+  });
+  const full=pending.length>=MAX_IMGS; $("#imgBtn").disabled=full; $("#capBtn").disabled=full;
+}
+function fileToData(file){ return new Promise((res,rej)=>{
+  const u=URL.createObjectURL(file), im=new Image();
+  im.onload=()=>{ const k=Math.min(1,1280/Math.max(im.naturalWidth,im.naturalHeight)); const c=document.createElement("canvas");
+    c.width=Math.round(im.naturalWidth*k); c.height=Math.round(im.naturalHeight*k); c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    URL.revokeObjectURL(u); res(c.toDataURL("image/jpeg",.82)); };
+  im.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error("bad image")); };
+  im.src=u; }); }
+async function addImageFiles(files){
+  let skipped=false, bad=false, added=0;
+  for(const f of files){
+    if(!f.type.startsWith("image/")) continue;
+    if(pending.length>=MAX_IMGS){ skipped=true; break; }
+    try{ const d=await fileToData(f); if(await addNew(d)) added++; }catch(e){ bad=true; }
+  }
+  renderThumbs();
+  if(skipped) say("Up to "+MAX_IMGS+" images per change.",true);
+  else if(bad) say("One image could not be read. Try a JPG or PNG.",true);
+  else say(added?"Image added.":"Image discarded.");
+}
+$("#imgBtn").onclick=()=>$("#imgFile").click();
+$("#imgFile").addEventListener("change",e=>{ addImageFiles([...e.target.files]); e.target.value=""; });
+document.addEventListener("paste",e=>{
+  if(!$("#ov").hidden) return;
+  const fs=[...((e.clipboardData&&e.clipboardData.files)||[])].filter(f=>f.type.startsWith("image/"));
+  if(fs.length){ e.preventDefault(); addImageFiles(fs); } });
+const addCard=$("#addCard");
+addCard.addEventListener("dragover",e=>{ e.preventDefault(); addCard.classList.add("drop"); });
+addCard.addEventListener("dragleave",()=>addCard.classList.remove("drop"));
+addCard.addEventListener("drop",e=>{ e.preventDefault(); addCard.classList.remove("drop"); addImageFiles([...(e.dataTransfer.files||[])]); });
+$("#capBtn").onclick=async()=>{
+  if(pending.length>=MAX_IMGS){ say("Up to "+MAX_IMGS+" images per change.",true); return; }
+  try{
+    api.pause(); const t=await api.getTime(); say("Grabbing frame...");
+    const d=api.capture&&await api.capture(); if(!d) throw new Error("none");
+    if(t!=null){ $("#time").value=fmt(t); dirty=true; }
+    say("Draw on the frame if needed, then press Save image.");
+    say((await addNew(d))?"Frame added.":"Frame discarded.");
+  }catch(e){ say("This host blocks frame capture. Take a screenshot on your device and press Add image.",true); } };
+
+/* ---------- draw / view overlay ---------- */
+const ov=$("#ov"), cv=$("#ovCanvas"), cx=cv.getContext("2d");
+let ovImg=null, strokes=[], cur=null, penColor="#ff4d4d", ovCb=null, ovCancelCb=null, ovEdit=false, ovFocus=null;
+const addNew=src=>new Promise(res=>openOv(src,true,d=>{ pending.push(d); renderThumbs(); res(true); },()=>res(false),true));
+function paint(){
+  cx.drawImage(ovImg,0,0,cv.width,cv.height);
+  cx.lineCap="round"; cx.lineJoin="round"; cx.lineWidth=Math.max(4,cv.width/200);
+  strokes.forEach(s=>{ cx.strokeStyle=s.c; cx.fillStyle=s.c; cx.beginPath();
+    if(s.p.length===1){ cx.arc(s.p[0][0],s.p[0][1],cx.lineWidth/2,0,6.283); cx.fill(); return; }
+    cx.moveTo(s.p[0][0],s.p[0][1]); s.p.slice(1).forEach(q=>cx.lineTo(q[0],q[1])); cx.stroke(); });
+}
+function openOv(src,edit,cb,cancelCb,isNew){
+  ovFocus=document.activeElement; ovEdit=edit; ovCb=cb||null; ovCancelCb=cancelCb||null; strokes=[]; cur=null;
+  $("#ovTools").hidden=!edit; $("#ovSave").hidden=!edit; $("#ovSave").textContent=isNew?"Save image":"Save drawing"; $("#ovCancel").textContent=edit?(isNew?"Discard":"Cancel"):"Close";
+  cv.className=edit?"":"view";
+  const im=new Image(); im.onload=()=>{ ovImg=im; cv.width=im.naturalWidth; cv.height=im.naturalHeight; paint();
+    ov.hidden=false; document.body.style.overflow="hidden"; $("#ovCancel").focus(); };
+  im.src=src;
+}
+function closeOv(){ const f=ovCancelCb; ovCancelCb=null; ov.hidden=true; document.body.style.overflow=""; if(ovFocus&&ovFocus.focus) try{ovFocus.focus()}catch(e){}
+  if(f) f(); }
+const ptr=e=>{ const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]; };
+cv.addEventListener("pointerdown",e=>{ if(!ovEdit) return; cv.setPointerCapture(e.pointerId); cur={c:penColor,p:[ptr(e)]}; strokes.push(cur); paint(); e.preventDefault(); });
+cv.addEventListener("pointermove",e=>{ if(!cur) return; cur.p.push(ptr(e)); paint(); });
+["pointerup","pointercancel"].forEach(t=>cv.addEventListener(t,()=>{ cur=null; }));
+document.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{ penColor=b.dataset.c; document.querySelectorAll(".sw").forEach(x=>x.classList.toggle("on",x===b)); });
+$("#ovUndo").onclick=()=>{ strokes.pop(); paint(); };
+$("#ovClear").onclick=()=>{ strokes=[]; paint(); };
+$("#ovCancel").onclick=closeOv;
+$("#ovSave").onclick=()=>{ const d=cv.toDataURL("image/jpeg",.85); ovCancelCb=null; if(ovCb) ovCb(d); closeOv(); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!ov.hidden) closeOv(); });
+
+/* ---------- report with images ---------- */
+
+/* ---------- PDF report (drawn on canvas pages, no libraries) ---------- */
+const PDF_FONT='system-ui,"Segoe UI",Arial,"Noto Sans","Nirmala UI",sans-serif';
+const loadImg=src=>new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; });
+function b64ToBytes(d){ const b=atob(d.split(",")[1]), u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
+function wrapText(c,text,maxW){
+  const out=[];
+  String(text).split("\n").forEach(par=>{
+    if(!par.trim()){ out.push(""); return; }
+    let line="";
+    par.split(/(\s+)/).forEach(w=>{
+      if(!w) return;
+      if(c.measureText(line+w).width<=maxW){ line+=w; return; }
+      if(line.trim()) out.push(line.trimEnd());
+      line=w.trimStart();
+      while(c.measureText(line).width>maxW){ let k=line.length; while(k>1&&c.measureText(line.slice(0,k)).width>maxW) k--; out.push(line.slice(0,k)); line=line.slice(k); }
+    });
+    out.push(line.trimEnd());
+  });
+  return out;
+}
+function makePdf(jpegs,w,h){
+  const enc=new TextEncoder(), parts=[], off=[]; let len=0;
+  const push=x=>{ const b=typeof x==="string"?enc.encode(x):x; parts.push(b); len+=b.length; };
+  const obj=(id,body)=>{ off[id]=len; push(id+" 0 obj\n"+body+"\nendobj\n"); };
+  const n=jpegs.length, PW=595.28, PH=841.89;
+  push("%PDF-1.4\n");
+  obj(1,"<< /Type /Catalog /Pages 2 0 R >>");
+  obj(2,"<< /Type /Pages /Count "+n+" /Kids ["+jpegs.map((_,i)=>(3+3*i)+" 0 R").join(" ")+"] >>");
+  jpegs.forEach((jp,i)=>{
+    const p=3+3*i, cs="q "+PW+" 0 0 "+PH+" 0 0 cm /Im0 Do Q";
+    obj(p,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+PW+" "+PH+"] /Resources << /XObject << /Im0 "+(p+2)+" 0 R >> >> /Contents "+(p+1)+" 0 R >>");
+    obj(p+1,"<< /Length "+cs.length+" >>\nstream\n"+cs+"\nendstream");
+    off[p+2]=len; push((p+2)+" 0 obj\n<< /Type /XObject /Subtype /Image /Width "+w+" /Height "+h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+jp.length+" >>\nstream\n"); push(jp); push("\nendstream\nendobj\n");
+  });
+  const total=2+3*n, xr=len; let x="xref\n0 "+(total+1)+"\n0000000000 65535 f \n";
+  for(let i=1;i<=total;i++) x+=String(off[i]).padStart(10,"0")+" 00000 n \n";
+  push(x+"trailer\n<< /Size "+(total+1)+" /Root 1 0 R >>\nstartxref\n"+xr+"\n%%EOF");
+  return new Blob(parts,{type:"application/pdf"});
+}
+async function buildPdf(){
+  const W=1240,H=1754,M=90,CW=W-2*M, items=[...state.items].sort((a,b)=>a.t-b.t), pages=[];
+  let cv,c,y;
+  const newPage=()=>{ cv=document.createElement("canvas"); cv.width=W; cv.height=H; c=cv.getContext("2d"); c.fillStyle="#fff"; c.fillRect(0,0,W,H); c.textBaseline="top"; y=M; pages.push(cv); };
+  const ensure=h=>{ if(y+h>H-M) newPage(); };
+  const para=(text,size,color,weight,lh)=>{ c.font=(weight||400)+" "+size+"px "+PDF_FONT; c.fillStyle=color;
+    wrapText(c,text,CW).forEach(l=>{ ensure(lh); c.fillText(l,M,y); y+=lh; }); };
+  newPage();
+  para(title,46,"#111",600,60);
+  const meta=[state.client&&"From: "+state.client, state.version&&"Version: "+state.version].filter(Boolean).join("   |   ");
+  if(meta) para(meta,26,"#555",400,38);
+  if(videoUrl) para("Video: "+videoUrl,22,"#555",400,32);
+  y+=8; para(items.length+" change"+(items.length===1?"":"s"),26,"#111",600,40); y+=10;
+  for(const it of items){
+    ensure(170); c.strokeStyle="#ddd"; c.lineWidth=2; c.beginPath(); c.moveTo(M,y); c.lineTo(W-M,y); c.stroke(); y+=22;
+    const tc=fmt(it.t); c.font="600 26px ui-monospace,Consolas,monospace"; const tw=c.measureText(tc).width+28;
+    c.fillStyle="#fff2cc"; c.strokeStyle="#e6c46a"; c.lineWidth=2; c.beginPath(); c.roundRect(M,y,tw,42,6); c.fill(); c.stroke();
+    c.fillStyle="#7a4b00"; c.fillText(tc,M+14,y+8);
+    c.font="400 24px "+PDF_FONT; c.fillStyle="#555"; const cat=it.cat+" - "; c.fillText(cat,M+tw+16,y+9);
+    const cw=c.measureText(cat).width; c.font="600 24px "+PDF_FONT; c.fillStyle=it.pri==="must"?"#b42318":"#555"; c.fillText(it.pri==="must"?"Must fix":"Nice to have",M+tw+16+cw,y+9);
+    y+=58; para(it.text,28,"#111",400,42); y+=8;
+    const imgs=[]; for(const d of (it.imgs||[])){ try{ imgs.push(await loadImg(d)); }catch(e){} }
+    const gap=20, bw=(CW-gap)/2, bh=520;
+    for(let k=0;k<imgs.length;k+=2){
+      const row=imgs.slice(k,k+2).map(im=>{ const r=Math.min(bw/im.naturalWidth,bh/im.naturalHeight,1); return {im,w:im.naturalWidth*r,h:im.naturalHeight*r}; });
+      const rh=Math.max(...row.map(r=>r.h)); ensure(rh+16); let x=M;
+      row.forEach(r=>{ c.drawImage(r.im,x,y,r.w,r.h); c.strokeStyle="#ccc"; c.lineWidth=2; c.strokeRect(x,y,r.w,r.h); x+=r.w+gap; });
+      y+=rh+16;
+    }
+    y+=14;
+  }
+  if(state.general&&state.general.trim()){ ensure(120); y+=10; para("Overall comments",28,"#111",600,42); para(state.general,28,"#111",400,42); }
+  pages.forEach((p,i)=>{ const g=p.getContext("2d"); g.textBaseline="top"; g.font="400 20px "+PDF_FONT; g.fillStyle="#888"; g.fillText("Page "+(i+1)+" of "+pages.length,W-M-110,H-60); });
+  const jpegs=pages.map(p=>b64ToBytes(p.toDataURL("image/jpeg",.88)));
+  const blob=makePdf(jpegs,W,H);
+  return new File([blob],(title.replace(/[^\w]+/g,"-")||"feedback")+"-feedback.pdf",{type:"application/pdf"});
+}
+let pdfCache={sig:"",file:null}, pdfTimer;
+const sigOf=()=>JSON.stringify([title,state.client,state.version,state.general,state.items.map(i=>[i.t,i.cat,i.pri,i.text,(i.imgs||[]).map(d=>d.length+d.slice(-24))])]);
+async function getReport(){ const sig=sigOf(); if(pdfCache.file&&pdfCache.sig===sig) return pdfCache.file; const f=await buildPdf(); pdfCache={sig,file:f}; return f; }
+function warmReport(){ clearTimeout(pdfTimer); if(!hasImgs()) return; pdfTimer=setTimeout(()=>{ getReport().catch(()=>{}); },700); }
+$("#repBtn").onclick=async()=>{ if(!ready())return; say("Preparing PDF..."); try{ saveReport(await getReport()); say("PDF downloaded. Send this file to your editor."); }catch(e){ say("Could not build the PDF.",true); } };
 
 /* ---------- start ---------- */
+renderThumbs(); updateCap();
 const start = params.get("video")||CONFIG.defaultVideo;
 if(start) setVideo(start); else { syncFields(); render(); }
 </script>
