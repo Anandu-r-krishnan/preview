@@ -208,7 +208,7 @@ button.sw.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent)}
         <button id="copyBtn">Copy text</button>
         <button id="dlBtn">Download .txt</button>
       </div>
-      <p class="hint" id="imgNote" hidden>When a change has images, Send on WhatsApp sends a PDF that holds the notes and images. If sharing is not available on this device, the PDF downloads. Attach it in WhatsApp.</p>
+      <p class="hint" id="imgNote" hidden>Your changes include images, so send the PDF. Press Download PDF, then attach the file in WhatsApp. It holds all your notes and images.</p>
       <p id="status" role="status" aria-live="polite"></p>
       <p class="hint">Notes save in this browser automatically. Nothing is sent until you press a send button.</p>
     </div>
@@ -451,7 +451,11 @@ function render(){
   const items=[...state.items].sort((a,b)=>a.t-b.t);
   $("#count").textContent = items.length?`(${items.length})`:"";
   $("#noneMsg").hidden = items.length>0;
-  $("#imgNote").hidden = !items.some(i=>i.imgs&&i.imgs.length); warmReport();
+  const withImgs = items.some(i=>i.imgs&&i.imgs.length);
+  $("#imgNote").hidden = !withImgs;
+  $("#sendWa").hidden = withImgs;
+  $("#repBtn").classList.toggle("primary", withImgs);
+  warmReport();
   const ul=$("#list"); ul.innerHTML="";
   items.forEach(it=>{
     const li=document.createElement("li"); li.className="item"+(it.done?" done":"");
@@ -492,18 +496,8 @@ function ready(){ if(!state.items.length && !state.general.trim()){ say("Add at 
 
 const hasImgs=()=>state.items.some(i=>i.imgs&&i.imgs.length);
 function saveReport(f){ const a=document.createElement("a"); a.href=URL.createObjectURL(f); a.download=f.name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }
-$("#sendWa").onclick=async()=>{ if(!ready())return;
-  let text=buildText();
-  if(hasImgs()){
-    let f=pdfCache.file&&pdfCache.sig===sigOf()?pdfCache.file:null;
-    if(!f){ say("Preparing PDF..."); try{ f=await getReport(); }catch(e){ say("Could not build the PDF. Use Copy text instead.",true); return; } }
-    text+="\n\nFull PDF report with images is attached.";
-    if(navigator.canShare && navigator.canShare({files:[f]})){
-      try{ await navigator.share({files:[f],text,title}); say("Shared."); return; }catch(e){ if(e&&e.name==="AbortError") return; } }
-    saveReport(f);
-    say("PDF downloaded. WhatsApp opened. Attach the downloaded PDF to the chat, then send.");
-  }
-  window.open(`https://wa.me/${CONFIG.whatsapp||""}?text=${encodeURIComponent(text)}`,"_blank","noopener"); };
+$("#sendWa").onclick=()=>{ if(!ready())return;
+  window.open(`https://wa.me/${CONFIG.whatsapp||""}?text=${encodeURIComponent(buildText())}`,"_blank","noopener"); };
 $("#sendGrp").onclick=async()=>{ if(!ready())return;
   try{ await navigator.clipboard.writeText(buildText()); say("Copied. Paste it in the group chat."); }catch(e){ say("Copy blocked. Use Copy text, then open the group.",true);}
   window.open(CONFIG.whatsappGroup,"_blank","noopener"); };
